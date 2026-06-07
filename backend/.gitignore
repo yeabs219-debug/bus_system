@@ -1,0 +1,14 @@
+# Dependency directories
+node_modules/
+
+# Local environment variables (Contains your DB passwords!)
+.env
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
