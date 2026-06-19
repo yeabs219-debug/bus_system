@@ -8,6 +8,8 @@ import  routesRouter from "./modules/routes/routes.router.js"
 import stopsRouter from "./modules/stops/stops.router.js"
 import stopPricesRouter from "./modules/stop-prices/stop-prices.router.js"
 import busesRouter from "./modules/buses/buses.router.js"
+import driversRouter from "./modules/drivers/drivers.router.js"
+import tripsRouter from "./modules/trips/trips.router.js"
 
 const app = express();
 const server = http.createServer(app);
@@ -20,7 +22,9 @@ app.use(express.json());
 app.use('/api/routes', routesRouter);
 app.use('/api/stops', stopsRouter);
 app.use('/api/stop-prices' , stopPricesRouter);
-app.use("/api/buses" ,busesRouter)
+app.use("/api/buses" ,busesRouter);
+app.use("/api/drivers" ,driversRouter);
+app.use("/api/trips" , tripsRouter);
 app.get('/', (req, res) => {
   res.json({ message: 'Bus system server running' });
 });

@@ -1,4 +1,5 @@
 import * as db from "./buses.queries.js"
+import * as routedb from "../routes/routes.queries.js"
 const getAllBuses = async (req, res) => {
   try {
     const buses = await db.getAllBuses();
@@ -42,12 +43,19 @@ const createBus = async (req, res) => {
     const { bus_number, plate_number, route_id } = req.body;
     if (!bus_number || !plate_number) {
       return res.status(400).json({ error: 'Bus number and plate number are required' });
+    };
+     if (route_id) {
+      const routeExists = await routedb.getRouteById(route_id);
+      if (!routeExists || (Array.isArray(routeExists) && routeExists.length === 0)) {
+        return res.status(404).json({ error: `Route with ID ${route_id} does not exist` });
+      }
     }
     const qr_code = `BUS-${bus_number}-${Date.now()}`;
     const bus = await db.createBus(bus_number, plate_number, qr_code, route_id);
     res.status(201).json(bus);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create bus' });
+    console.error(err)
+    res.status(500).json({ error: 'Failed to create bus' ,details: err.message});
   }
 };
 
