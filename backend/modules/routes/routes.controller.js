@@ -18,6 +18,29 @@ const getRouteById = async (req, res) => {
   }
 };
 
+const getRouteByNumber = async (req, res) => {
+  try {
+    const route = await db.getRouteByNumber(req.params.route_number);
+    if (!route) return res.status(404).json({ error: 'Route not found' });
+    res.json(route);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch route' });
+  }
+};
+
+const searchRoutesByTrip = async (req, res) => {
+  try {
+    const { origin, destination } = req.query;
+    if (!origin || !destination) {
+      return res.status(400).json({ error: 'Origin and destination are required' });
+    }
+    const routes = await db.searchRoutesByTrip(origin, destination);
+    res.json(routes);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to search routes' });
+  }
+};
+
 const createRoute = async (req, res) => {
   try {
     const { route_number, name, origin, destination } = req.body;
@@ -56,6 +79,8 @@ const deleteRoute = async (req, res) => {
 export { 
   getAllRoutes, 
   getRouteById, 
+  getRouteByNumber,
+  searchRoutesByTrip,
   createRoute, 
   updateRoute, 
   deleteRoute 

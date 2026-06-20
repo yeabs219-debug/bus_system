@@ -78,6 +78,7 @@ const updateBusLocation = async (req, res) => {
     res.json(bus);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update bus location' });
+    console.error(err)
   }
 };
 

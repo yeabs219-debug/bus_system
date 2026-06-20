@@ -22,6 +22,7 @@ const createStopPrice = async (stop_id, direction, price) => {
      WHERE stop_id = $1 AND direction = $2`,
     [stop_id, direction]
   );
+  
   if (existing.rows.length > 0) {
     throw new Error('Price for this stop and direction already exists');
   }

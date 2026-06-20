@@ -1,6 +1,6 @@
 import * as db from "./trips.queries.js"
 import * as busesDb from "../buses/buses.queries.js"
-
+import * as routesDb from "../routes/routes.queries.js"
 const getActiveTrips = async (req, res) => {
   try {
     const trips = await db.getActiveTrips();
@@ -22,27 +22,26 @@ const getTripById = async (req, res) => {
 
 const createTrip = async (req, res) => {
   try {
-    const { bus_id, driver_id, route_id, direction } = req.body;
+    const { bus_number , driver_id, route_number, direction } = req.body;
 
-    if (!bus_id || !driver_id || !route_id || !direction) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-    if (!['forward', 'reverse'].includes(direction)) {
-      return res.status(400).json({ error: 'Direction must be forward or reverse' });
-    }
+    const bus = await busesDb.getBusByNumber(bus_number);
+    if (!bus) return res.status(404).json({ error: 'Bus not found' });
 
-    const existingTrip = await db.getActiveTripByBus(bus_id);
+    const route = await routesDb.getRouteByNumber(route_number);
+    if (!route) return res.status(404).json({ error: 'Route not found' });
+
+    const existingTrip = await db.getActiveTripByBus(bus.id);
     if (existingTrip) {
       return res.status(400).json({ error: 'This bus already has an active trip' });
     }
 
-    const trip = await db.createTrip(bus_id, driver_id, route_id, direction);
-
-    await busesDb.updateBusStatus(bus_id, 'active');
+    const trip = await db.createTrip(bus.id, driver_id, route.id, direction);
+    await busesDb.updateBusStatus(bus.id, 'active');
 
     res.status(201).json(trip);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create trip' });
+    console.error(err)
   }
 };
 

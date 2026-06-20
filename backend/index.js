@@ -10,6 +10,7 @@ import stopPricesRouter from "./modules/stop-prices/stop-prices.router.js"
 import busesRouter from "./modules/buses/buses.router.js"
 import driversRouter from "./modules/drivers/drivers.router.js"
 import tripsRouter from "./modules/trips/trips.router.js"
+import ticketsRouter from "./modules/tickets/tickets.router.js"
 
 const app = express();
 const server = http.createServer(app);
@@ -25,6 +26,7 @@ app.use('/api/stop-prices' , stopPricesRouter);
 app.use("/api/buses" ,busesRouter);
 app.use("/api/drivers" ,driversRouter);
 app.use("/api/trips" , tripsRouter);
+app.use("/api/tickets" , ticketsRouter)
 app.get('/', (req, res) => {
   res.json({ message: 'Bus system server running' });
 });
