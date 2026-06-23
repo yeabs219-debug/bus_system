@@ -11,6 +11,9 @@ import busesRouter from "./modules/buses/buses.router.js"
 import driversRouter from "./modules/drivers/drivers.router.js"
 import tripsRouter from "./modules/trips/trips.router.js"
 import ticketsRouter from "./modules/tickets/tickets.router.js"
+import  authRouter  from './modules/auth/auth.router.js';
+import startGPSSimulation from './socket/gpsSimulator.js';
+
 
 const app = express();
 const server = http.createServer(app);
@@ -20,13 +23,15 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/routes', routesRouter);
-app.use('/api/stops', stopsRouter);
-app.use('/api/stop-prices' , stopPricesRouter);
+app.use("/api/auth" , authRouter);
+app.use("/api/routes", routesRouter);
+app.use("/api/stops", stopsRouter);
+app.use("/api/stop-prices" , stopPricesRouter);
 app.use("/api/buses" ,busesRouter);
 app.use("/api/drivers" ,driversRouter);
 app.use("/api/trips" , tripsRouter);
 app.use("/api/tickets" , ticketsRouter)
+
 app.get('/', (req, res) => {
   res.json({ message: 'Bus system server running' });
 });
@@ -37,6 +42,7 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+startGPSSimulation(io);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

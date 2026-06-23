@@ -1,11 +1,13 @@
 import express from "express";
 const router = express.Router();
+import requireAdmin from "../../middleware/authMiddleware.js";
 import * as controller from "./stop-prices.controller.js";
 
-router.get("/stop/:stop_id" , controller.getPricesByStop);
+router.post('/bulk',requireAdmin,  controller.bulkCreatePrices);
+router.get("/stop/:stop_id" ,controller.getPricesByStop);
 router.get("/stop/:stop_id/direction/:direction" , controller.getPriceByStopAndDirection);
-router.post("/" , controller.createStopPrice);
-router.put("/:id" , controller.updateStopPrice);
-router.delete("/:id" ,controller.deleteStopPrice);
+router.post("/" ,requireAdmin ,  controller.createStopPrice);
+router.put("/:id" ,requireAdmin ,  controller.updateStopPrice);
+router.delete("/:id" , requireAdmin , controller.deleteStopPrice);
 
 export default router;

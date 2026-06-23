@@ -34,6 +34,24 @@ const createStopPrice = async (stop_id, direction, price) => {
   return result.rows[0];
 };
 
+const bulkCreatePrices = async (priceList) => {
+  const values = [];
+  const placeholders = [];
+  
+  priceList.forEach((item, index) => {
+    const offset = index * 3;
+    placeholders.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`);
+    values.push(item.stop_id, item.direction, item.price);
+  });
+
+  const result = await pool.query(
+    `INSERT INTO stop_prices (stop_id, direction, price) 
+     VALUES ${placeholders.join(', ')} RETURNING *`,
+    values
+  );
+  return result.rows;
+};
+
 const updateStopPrice = async (id, price) => {
   const result = await pool.query(
     `UPDATE stop_prices SET price = $1 
@@ -51,5 +69,6 @@ export {
   getPriceByStopAndDirection,
   createStopPrice,
   updateStopPrice,
-  deleteStopPrice
+  deleteStopPrice,
+  bulkCreatePrices
 }

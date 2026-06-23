@@ -22,16 +22,19 @@ const getRouteByNumber = async (route_number) => {
   return result.rows[0];
 };
 
-const searchRoutesByTrip = async (origin, destination) => {
+const searchRoutesByStops = async (originText, destinationText) => {
   const result = await pool.query(
-    `SELECT * FROM routes 
-     WHERE is_active = true
-     AND (
-       (LOWER(origin) LIKE LOWER($1) AND LOWER(destination) LIKE LOWER($2))
-       OR
-       (LOWER(origin) LIKE LOWER($2) AND LOWER(destination) LIKE LOWER($1))
-     )`,
-    [`%${origin}%`, `%${destination}%`]
+    `SELECT DISTINCT r.*, 
+            s1.stop_order AS origin_stop_order,
+            s2.stop_order AS destination_stop_order
+     FROM routes r
+     JOIN stops s1 ON s1.route_id = r.id
+     JOIN stops s2 ON s2.route_id = r.id
+     WHERE r.is_active = true
+     AND LOWER(s1.name) LIKE LOWER($1)
+     AND LOWER(s2.name) LIKE LOWER($2)
+     AND s1.id != s2.id`,
+    [`%${originText}%`, `%${destinationText}%`]
   );
   return result.rows;
 };
@@ -63,7 +66,7 @@ export{
   getAllRoutes, 
   getRouteById, 
   getRouteByNumber,
-  searchRoutesByTrip,
+  searchRoutesByStops,
   createRoute, 
   updateRoute, 
   deleteRoute 

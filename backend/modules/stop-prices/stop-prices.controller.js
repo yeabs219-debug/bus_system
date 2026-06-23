@@ -36,6 +36,20 @@ const createStopPrice = async (req, res) => {
   }
 };
 
+const bulkCreatePrices = async (req, res) => {
+  try {
+    const { prices } = req.body;
+    if (!Array.isArray(prices) || prices.length === 0) {
+      return res.status(400).json({ error: 'Prices array is required' });
+    }
+    const result = await db.bulkCreatePrices(prices);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create prices' });
+    console.error(err)
+  }
+};
+
 const updateStopPrice = async (req, res) => {
   try {
     const { price } = req.body;
@@ -61,5 +75,6 @@ export  {
   getPriceByStopAndDirection,
   createStopPrice,
   updateStopPrice,
-  deleteStopPrice
+  deleteStopPrice,
+  bulkCreatePrices
 };

@@ -34,8 +34,17 @@ const searchRoutesByTrip = async (req, res) => {
     if (!origin || !destination) {
       return res.status(400).json({ error: 'Origin and destination are required' });
     }
-    const routes = await db.searchRoutesByTrip(origin, destination);
-    res.json(routes);
+
+    const routes = await db.searchRoutesByStops(origin, destination);
+
+    const results = routes.map(route => ({
+      ...route,
+      direction: route.origin_stop_order < route.destination_stop_order 
+        ? 'forward' 
+        : 'reverse'
+    }));
+
+    res.json(results);
   } catch (err) {
     res.status(500).json({ error: 'Failed to search routes' });
   }
