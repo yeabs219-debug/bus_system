@@ -60,7 +60,7 @@ const startGPSSimulation = (io) => {
     } catch (err) {
       console.error('GPS simulation error:', err);
     }
-  }, 5000);
+  }, 20000);
 };
 
 export default startGPSSimulation;
