@@ -35,14 +35,20 @@ const searchRoutesByTrip = async (req, res) => {
       return res.status(400).json({ error: 'Origin and destination are required' });
     }
 
-    const routes = await db.searchRoutesByStops(origin, destination);
+    const rows = await db.searchRoutesByStops(origin, destination);
 
-    const results = routes.map(route => ({
-      ...route,
-      direction: route.origin_stop_order < route.destination_stop_order 
-        ? 'forward' 
-        : 'reverse'
-    }));
+    const seen = new Set();
+    const results = [];
+    for (const route of rows) {
+      if (seen.has(route.id)) continue;
+      seen.add(route.id);
+      results.push({
+        ...route,
+        direction: route.origin_stop_order < route.destination_stop_order
+          ? 'forward'
+          : 'reverse'
+      });
+    }
 
     res.json(results);
   } catch (err) {
