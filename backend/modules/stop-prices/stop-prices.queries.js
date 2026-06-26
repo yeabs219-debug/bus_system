@@ -46,7 +46,10 @@ const bulkCreatePrices = async (priceList) => {
 
   const result = await pool.query(
     `INSERT INTO stop_prices (stop_id, direction, price) 
-     VALUES ${placeholders.join(', ')} RETURNING *`,
+     VALUES ${placeholders.join(', ')}
+     ON CONFLICT (stop_id, direction) 
+     DO UPDATE SET price = EXCLUDED.price
+     RETURNING *`,
     values
   );
   return result.rows;
