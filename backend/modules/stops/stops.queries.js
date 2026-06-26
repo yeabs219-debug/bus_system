@@ -18,12 +18,31 @@ const getStopById = async (id) => {
 };
 
 const createStop = async (route_id, name, latitude, longitude, stop_order) => {
-  const result = await pool.query(
-    `INSERT INTO stops (route_id, name, latitude, longitude, stop_order) 
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [route_id, name, latitude, longitude, stop_order]
-  );
-  return result.rows[0];
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    await client.query(
+      `UPDATE stops 
+       SET stop_order = stop_order + 1 
+       WHERE route_id = $1 AND stop_order >= $2`,
+      [route_id, stop_order]
+    );
+
+    const result = await client.query(
+      `INSERT INTO stops (route_id, name, latitude, longitude, stop_order) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [route_id, name, latitude, longitude, stop_order]
+    );
+
+    await client.query('COMMIT');
+    return result.rows[0];
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 };
 
 const updateStop = async (id, name, latitude, longitude, stop_order) => {
