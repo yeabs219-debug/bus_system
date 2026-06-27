@@ -3,3 +3,9 @@ backend/node_modules/
 frontend/node_modules/
 .env
 backend/.env
+dist
+.env
+.env.local
+*.log
+.DS_Store
+.vscode
